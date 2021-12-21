@@ -5,14 +5,18 @@
 <div class="row">
     <div class="col-md-12">
         <h2>Products</h2>
-        <table id="example" class="table table-sm table-bordered table-striped" style="width:100%">
+        <table id="example" class="table table-sm table-striped table-bordered dt-responsive nowrap" width="100%" cellspacing="0">
             <thead>
                 <tr>
-                    <th>Product Id</th>
+                    <th>CustomerID</th>
                     <th>Name</th>
-                    <th>Product Number</th>
-                    <th>Color</th>
-                    <th>List Price</th>
+                    <th>Address</th>
+                    <th>Country</th>
+                    <th>City</th>
+                    <th>PhoneNumber</th>
+                    <th>Salary</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
                 </tr>
             </thead>
         </table>
@@ -24,20 +28,63 @@
 <script src="~/Scripts/DataTables/dataTables.bootstrap4.min.js"></script>
 
 <script>
+
+    function DeleteData(CustomerID) {
+        if (confirm("Are you sure you want to delete ...?")) {
+            Delete(CustomerID);
+        } else {
+            return false;
+        }
+    }
+
+
+    function Delete(CustomerID) {
+        var url = "@Url.Action("Delete", "Home")";
+
+        $.post(url, { ID: CustomerID }, function(data) {
+            if (data) {
+                oTable = $('#example').DataTable();
+                oTable.draw();
+            } else {
+                alert("Something Went Wrong!");
+            }
+        });
+    }
+
     $(document).ready(function () {
         $.noConflict();
-        $('#example').DataTable({
-            processing: true,
-            ordering: true,
-            paging: true,
-            searching: true,
-            ajax: "@Url.Action("GetProducts", "Home")",
-            columns: [
-                { "data": "ProductId" },
-                { "data": "Name" },
-                { "data": "ProductNumber" },
-                { "data": "Color" },
-                { "data": "ListPrice" }
+        $("#example").DataTable({
+            "processing": true, // for show progress bar
+            "serverSide": true, // for process server side
+            "filter": true, // this is for disable filter (search box)
+            "orderMulti": false, // for disable multiple column at once
+            "ajax": {
+                "url": "@Url.Action("LoadData", "Home")",
+                "type": "POST",
+                "datatype": "json"
+            },
+            "columnDefs": [{
+                "targets": [0],
+                "visible": false,
+                "searchable": false
+            }],
+            "columns": [
+                { "data": "CustomerID", "name": "CustomerID", "autoWidth": true },
+                { "data": "Name", "name": "Name", "autoWidth": true },
+                { "data": "Address", "name": "Address", "autoWidth": true },
+                { "data": "Country", "name": "Country", "autoWidth": true },
+                { "data": "City", "name": "City", "autoWidth": true },
+                { "data": "PhoneNumber", "name": "PhoneNumber", "autoWidth": true },
+                { "data": "Salary", "name": "Salary", "autoWidth": true },
+                {
+                    "render": function (data, type, full, meta) { return '<a class="btn btn-info" href="/DemoGrid/Edit/' + full.CustomerID + '">Edit</a>'; }
+                },
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return "<a href='#' class='btn btn-danger' onclick=DeleteData('" + row.CustomerID + "'); >Delete</a>";
+                    }
+                },
             ]
         });
     });
