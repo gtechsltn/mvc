@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Products</h2>
+        <table id="example" class="table table-sm table-bordered table-striped" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Product Id</th>
+                    <th>Name</th>
+                    <th>Product Number</th>
+                    <th>Color</th>
+                    <th>List Price</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/DataTables/dataTables.bootstrap4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $.noConflict();
+        $('#example').DataTable({
+            processing: true,
+            ordering: true,
+            paging: true,
+            searching: true,
+            ajax: "@Url.Action("GetProducts", "Home")",
+            columns: [
+                { "data": "productId" },
+                { "data": "name" },
+                { "data": "productNumber" },
+                { "data": "color" },
+                { "data": "listPrice" }
+            ]
+        });
+    });
+</script>
